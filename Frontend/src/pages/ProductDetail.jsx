@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import api, { SERVER_ORIGIN } from '../api/axios';
+import api, { resolveImageUrl } from '../api/axios';
 
 function ProductDetail() {
   const { id } = useParams();
@@ -70,7 +70,7 @@ function ProductDetail() {
     <div>
       <div className="product-detail">
         <img
-          src={product.imageUrl ? `${SERVER_ORIGIN}${product.imageUrl}` : 'https://placehold.co/350x350?text=No+Image'}
+          src={product.imageUrl ? resolveImageUrl(product.imageUrl) : 'https://placehold.co/350x350?text=No+Image'}
           alt={product.name}
           className="product-detail-img"
           style={{ maxWidth: '350px', flexShrink: 0 }}

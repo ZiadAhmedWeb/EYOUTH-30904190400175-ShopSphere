@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import api, { SERVER_ORIGIN } from '../api/axios';
+import api, { resolveImageUrl } from '../api/axios';
 
 function Home() {
   const [products, setProducts] = useState([]);
@@ -59,7 +59,7 @@ function Home() {
           <h2 className="section-title">Featured Products</h2>
           <Link to={`/products/${currentProduct.id}`} className="carousel-slide">
             <img
-              src={currentProduct.imageUrl ? `${SERVER_ORIGIN}${currentProduct.imageUrl}` : 'https://placehold.co/400x300?text=No+Image'}
+              src={currentProduct.imageUrl ? resolveImageUrl(currentProduct.imageUrl) : 'https://placehold.co/400x300?text=No+Image'}
               alt={currentProduct.name}
               className="carousel-img"
             />
