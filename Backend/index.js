@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const net = require('net');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
@@ -33,6 +34,62 @@ app.use(express.json());
 app.set('trust proxy', 1);
 app.use(logRequest);
 
+function tcpProbe(host, port, timeoutMs = 8000) {
+  return new Promise((resolve) => {
+    const socket = net.connect({ host, port });
+    const finish = (result) => {
+      socket.destroy();
+      resolve(result);
+    };
+    socket.setTimeout(timeoutMs);
+    socket.on('connect', () => finish('open'));
+    socket.on('timeout', () => finish(`timeout after ${timeoutMs}ms`));
+    socket.on('error', (err) => finish(`error: ${err.message}`));
+  });
+}
+
+function describeUri(uri) {
+  if (!uri) return { present: false };
+  const match = uri.match(/^(mongodb(?:\+srv)?:\/\/)([^@/]*)@([^/:?]+)[^?]*(\?.*)?$/);
+  if (!match) return { present: true, parseable: false };
+  const params = new URLSearchParams(match[4] || '');
+  return {
+    present: true,
+    parseable: true,
+    scheme: match[1].includes('+srv') ? 'mongodb+srv' : 'mongodb',
+    credentialsProvided: match[2].length > 0,
+    host: match[3],
+    database: ((match[4] || '').match(/\/([a-zA-Z0-9_-]+)\?/) || [])[1] || '(missing!)',
+    directConnection: params.get('directConnection'),
+    ssl: params.get('ssl') || params.get('tls'),
+  };
+}
+
+async function deepMongoProbe() {
+  const uri = process.env.MONGO_URI;
+  const shape = describeUri(uri);
+  if (!shape.present) return { uriShape: shape };
+
+  const atlasHost = shape.parseable ? shape.host : 'ac-9pejbdf-shard-00-00.y61nxei.mongodb.net';
+  const tcp = await tcpProbe(atlasHost, 27017);
+
+  let inlineConnect;
+  try {
+    const probe = new mongoose.Mongoose();
+    await probe.connect(uri, {
+      serverSelectionTimeoutMS: 8000,
+      connectTimeoutMS: 8000,
+      socketTimeoutMS: 8000,
+    });
+    inlineConnect = 'connected';
+    await probe.disconnect();
+  } catch (err) {
+    inlineConnect = `FAILED: ${err.message}`;
+  }
+
+  return { uriShape: shape, tcpToAtlas27017: tcp, freshInstanceConnect: inlineConnect };
+}
+
 app.get('/', (req, res) => {
   res.json({
     name: 'ZeeCrumb API',
@@ -51,11 +108,10 @@ app.get('/health', async (req, res) => {
   } catch (err) {
     console.error('Health check failed for PostgreSQL:', err.message);
   }
-  const mongoDiag = connectMongo.getMongoDiagnostics();
   const mongo = mongoose.connection.readyState === 1 ? 'up' : 'down';
   const health = { status: 'ok', postgres, mongo, timestamp: new Date().toISOString() };
   if (mongo === 'down') {
-    health.mongoDiagnostics = mongoDiag;
+    health.mongoDiagnostics = await deepMongoProbe();
   }
   res.json(health);
 });
