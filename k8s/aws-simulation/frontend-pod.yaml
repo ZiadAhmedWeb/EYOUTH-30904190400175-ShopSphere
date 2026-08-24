@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend-pod
+  namespace: aws-simulation
+  labels:
+    app: zeecrumb-frontend
+    tier: web
+    cloud-simulation: aws
+spec:
+  containers:
+    - name: frontend
+      image: zeecrumb-frontend:aws
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 80

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: aws-simulation
+  labels:
+    app: zeecrumb-backend
+    cloud-simulation: aws
+spec:
+  type: ClusterIP
+  selector:
+    app: zeecrumb-backend
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 5000

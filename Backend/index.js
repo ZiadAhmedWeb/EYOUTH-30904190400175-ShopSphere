@@ -64,7 +64,7 @@ app.get('/health', async (req, res) => {
   } catch (err) {
     console.error('Health check failed for MongoDB:', err.message);
   }
-  res.json({ status: 'ok', postgres, mongo, timestamp: new Date().toISOString() });
+  res.json({ status: 'ok', postgres, mongo, region: process.env.SIM_REGION || 'production-cloud', timestamp: new Date().toISOString() });
 });
 
 const apiLimiter = rateLimit({

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend-pod
+  namespace: gcp-simulation
+  labels:
+    app: zeecrumb-frontend
+    tier: web
+    cloud-simulation: gcp
+spec:
+  containers:
+    - name: frontend
+      image: zeecrumb-frontend:gcp
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 80
