@@ -51,8 +51,13 @@ app.get('/health', async (req, res) => {
   } catch (err) {
     console.error('Health check failed for PostgreSQL:', err.message);
   }
+  const mongoDiag = connectMongo.getMongoDiagnostics();
   const mongo = mongoose.connection.readyState === 1 ? 'up' : 'down';
-  res.json({ status: 'ok', postgres, mongo, timestamp: new Date().toISOString() });
+  const health = { status: 'ok', postgres, mongo, timestamp: new Date().toISOString() };
+  if (mongo === 'down') {
+    health.mongoDiagnostics = mongoDiag;
+  }
+  res.json(health);
 });
 
 const apiLimiter = rateLimit({
