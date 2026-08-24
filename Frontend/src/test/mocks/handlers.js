@@ -12,4 +12,10 @@ export const handlers = [
       totalPages: 1,
     });
   }),
+  http.get('http://localhost:5000/api/categories', () => {
+    return HttpResponse.json([
+      { id: 1, name: 'Shirts' },
+      { id: 2, name: 'Shorts' },
+    ]);
+  }),
 ];

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import api from '../api/axios';
+import api, { SERVER_ORIGIN } from '../api/axios';
 
 function ProductList() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -86,7 +86,7 @@ function ProductList() {
             {data.products.map((product) => (
               <Link to={`/products/${product.id}`} key={product.id} className="product-card">
                 <img
-                  src={product.imageUrl ? `http://localhost:5000${product.imageUrl}` : 'https://placehold.co/220x220?text=No+Image'}
+                  src={product.imageUrl ? `${SERVER_ORIGIN}${product.imageUrl}` : 'https://placehold.co/220x220?text=No+Image'}
                   alt={product.name}
                   className="product-img"
                 />
