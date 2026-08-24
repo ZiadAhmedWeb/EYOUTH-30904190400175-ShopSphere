@@ -33,6 +33,16 @@ app.use(express.json());
 app.set('trust proxy', 1);
 app.use(logRequest);
 
+app.get('/', (req, res) => {
+  res.json({
+    name: 'ZeeCrumb API',
+    studentId: 'EYOUTH-30904190400175',
+    project: 'ShopSphere Enterprise Production and Cloud Modernization',
+    status: 'running',
+    endpoints: ['/health', '/api/products', '/api/categories', '/api/auth/register'],
+  });
+});
+
 app.get('/health', async (req, res) => {
   let postgres = 'down';
   try {
