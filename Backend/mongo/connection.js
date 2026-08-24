@@ -1,23 +1,25 @@
 const mongoose = require('mongoose');
 
-let lastConnectError = null;
+let connectPromise = null;
 
-async function connectMongo() {
-  try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log('MongoDB connected');
-  } catch (err) {
-    lastConnectError = err.message;
-    console.error('MongoDB connection error:', err);
+function ensureMongo() {
+  if (!connectPromise) {
+    connectPromise = mongoose
+      .connect(process.env.MONGO_URI, {
+        serverSelectionTimeoutMS: 10000,
+        connectTimeoutMS: 10000,
+        socketTimeoutMS: 10000,
+      })
+      .then(() => {
+        console.log('MongoDB connected');
+      })
+      .catch((err) => {
+        console.error('MongoDB connection error:', err.message);
+        connectPromise = null;
+        throw err;
+      });
   }
+  return connectPromise;
 }
 
-function getMongoDiagnostics() {
-  return {
-    readyState: mongoose.connection.readyState,
-    error: process.env.MONGO_URI ? lastConnectError : 'MONGO_URI environment variable is not set',
-  };
-}
-
-module.exports = connectMongo;
-module.exports.getMongoDiagnostics = getMongoDiagnostics;
+module.exports = ensureMongo;
