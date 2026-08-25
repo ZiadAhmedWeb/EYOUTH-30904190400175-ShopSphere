@@ -5,7 +5,6 @@ const prisma = require('../prisma/client');
 const { authenticate } = require('../middleware/auth');
 const { isValidPassword } = require('../utils/validators');
 const router = express.Router();
-const sendWelcomeEmail = require('../utils/mailer');
 
 router.post('/register', async (req, res) => {
   try {
@@ -29,7 +28,16 @@ router.post('/register', async (req, res) => {
     const user = await prisma.user.create({
       data: { email, password: hashedPassword },
     });
-    sendWelcomeEmail(user.email);
+
+    if (process.env.VERCEL) {
+      const emailFn = `${process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : ''}/api/send-welcome-email`;
+      fetch(emailFn, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email }),
+      }).catch(() => {});
+    }
+
     res.status(201).json({ id: user.id, email: user.email, role: user.role });
   } catch (err) {
     console.error(err);

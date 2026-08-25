@@ -2,6 +2,9 @@
   "functions": {
     "api/index.js": {
       "includeFiles": "uploads/**"
+    },
+    "api/send-welcome-email.js": {
+      "includeFiles": "utils/**"
     }
   },
   "rewrites": [{ "source": "/(.*)", "destination": "/api/index.js" }]

@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/reviews.js": {
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    { "source": "/api/reviews/(.*)", "destination": "/api/reviews" }
+  ]
+}

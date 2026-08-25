@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -6,27 +6,23 @@ const reviewSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-
     userId: {
       type: Number,
       required: true,
     },
-
     userEmail: {
       type: String,
       required: true,
     },
-
     rating: {
       type: Number,
       required: true,
       min: 1,
       max: 5,
     },
-
     comment: {
       type: String,
-      default: "",
+      default: '',
     },
   },
   {
@@ -34,4 +30,4 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Review", reviewSchema);
+module.exports = mongoose.model('Review', reviewSchema);

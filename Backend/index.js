@@ -10,7 +10,6 @@ const app = express();
 const logRequest = require('./middleware/logger');
 const ensureMongo = require('./mongo/connection');
 const categoryRoutes = require('./routes/categories');
-const reviewRoutes = require('./routes/reviews');
 const statsRoutes = require('./routes/stats');
 const prisma = require('./prisma/client');
 
@@ -80,7 +79,27 @@ app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/uploads', express.static('uploads'));
 app.use('/api/categories', categoryRoutes);
-app.use('/api/reviews', reviewRoutes);
+app.use('/api/reviews', async (req, res) => {
+  const reviewsUrl = process.env.REVIEWS_SERVICE_URL;
+  if (!reviewsUrl) {
+    return res.status(503).json({ error: 'Reviews service not configured' });
+  }
+  try {
+    const target = new URL(req.originalUrl, reviewsUrl);
+    const headers = { 'Content-Type': req.headers['content-type'] || 'application/json' };
+    if (req.headers.authorization) headers.authorization = req.headers.authorization;
+    const fetchOptions = { method: req.method, headers };
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+      fetchOptions.body = JSON.stringify(req.body);
+    }
+    const upstream = await fetch(target.href, fetchOptions);
+    const data = await upstream.text();
+    res.status(upstream.status).set('Content-Type', upstream.headers.get('content-type') || 'application/json').send(data);
+  } catch (err) {
+    console.error('Reviews proxy error:', err.message);
+    res.status(502).json({ error: 'Reviews service unavailable' });
+  }
+});
 app.use('/api/stats', statsRoutes);
 
 if (!process.env.VERCEL) {

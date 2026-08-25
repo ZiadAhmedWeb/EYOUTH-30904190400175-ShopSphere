@@ -1,0 +1,19 @@
+{
+  "name": "reviews-service",
+  "version": "1.0.0",
+  "description": "ShopSphere Reviews Microservice",
+  "main": "api/reviews.js",
+  "scripts": {
+    "start": "node api/reviews.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.7.4"
+  },
+  "license": "ISC",
+  "type": "commonjs"
+}
