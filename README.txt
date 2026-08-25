@@ -191,6 +191,38 @@ Prisma Studio:
 
 npx prisma studio
 
+## PRODUCTION DEPLOYMENT
+
+Student ID: EYOUTH-30904190400175
+
+Repository:
+https://github.com/ZiadAhmedWeb/EYOUTH-30904190400175-ShopSphere
+
+Frontend (PaaS — Vercel):
+https://eyouth-30904190400175-shop-sphere-g.vercel.app
+
+Backend API (PaaS — Vercel):
+https://eyouth-30904190400175-shop-sphere.vercel.app
+
+Reviews Service (PaaS — Vercel, separate microservice):
+https://eyouth-30904190400175-shop-sphere-r.vercel.app/api/reviews/:productId
+
+Databases (SaaS):
+- PostgreSQL: Supabase (hosted, serverless Postgres)
+- MongoDB: MongoDB Atlas (hosted, managed NoSQL)
+
+Health Check:
+https://eyouth-30904190400175-shop-sphere.vercel.app/health
+
+Architecture:
+- Frontend serves the React SPA via Nginx on Vercel
+- Backend is a Vercel serverless function (Express + Prisma + PostgreSQL)
+- Reviews service is a SEPARATE Vercel serverless function (Mongoose + MongoDB)
+- Backend proxies /api/reviews/* to the reviews service via REVIEWS_SERVICE_URL
+- Welcome emails are sent via a dedicated serverless function (api/send-welcome-email.js)
+- All secrets stored as Vercel environment variables (never in repo)
+- CORS, Helmet, and rate limiting are active on the backend
+
 ## TEST ACCOUNTS
 
 Admin
