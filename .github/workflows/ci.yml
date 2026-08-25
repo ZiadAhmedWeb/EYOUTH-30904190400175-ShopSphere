@@ -60,7 +60,7 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: Backend
           vercel-args: '--prod'
-          vercel-version: '47.2.2'
+          vercel-version: 'latest'
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -79,7 +79,7 @@ jobs:
           vercel-project-id: ${{ secrets.FRONTEND_PROJECT_ID }}
           working-directory: Frontend
           vercel-args: '--prod'
-          vercel-version: '47.2.2'
+          vercel-version: 'latest'
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.FRONTEND_PROJECT_ID }}
@@ -98,7 +98,7 @@ jobs:
           vercel-project-id: ${{ secrets.REVIEWS_PROJECT_ID }}
           working-directory: reviews-service
           vercel-args: '--prod'
-          vercel-version: '47.2.2'
+          vercel-version: 'latest'
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.REVIEWS_PROJECT_ID }}
