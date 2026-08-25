@@ -1,7 +1,7 @@
 # ZeeCrumb — Full-Stack E-Commerce Platform
 
 GitHub Repository:
-https://github.com/ZiadAhmedWeb/ZiadAhmedSoliman-Deci-ecommerce.git
+https://github.com/ZiadAhmedWeb/EYOUTH-30904190400175-ShopSphere
 
 ## OVERVIEW
 
