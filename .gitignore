@@ -3,3 +3,5 @@
 node_modules/
 
 NEXT-STEPS.md
+backup.sql
+*.sql
