@@ -46,59 +46,33 @@ jobs:
         env:
           VITE_API_URL: https://eyouth-30904190400175-shop-sphere.vercel.app/api
 
-  deploy-backend:
-    name: Deploy Backend
-    needs: [test-backend]
+  deploy:
+    name: Deploy to Vercel
+    needs: [test-backend, build-frontend]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - name: Backend
+            project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+            working-dir: Backend
+          - name: Frontend
+            project-id: ${{ secrets.FRONTEND_PROJECT_ID }}
+            working-dir: Frontend
+          - name: Reviews
+            project-id: ${{ secrets.REVIEWS_PROJECT_ID }}
+            working-dir: reviews-service
     steps:
       - uses: actions/checkout@v4
       - uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: Backend
+          vercel-project-id: ${{ matrix.project-id }}
+          working-directory: ${{ matrix.working-dir }}
           vercel-args: '--prod'
           vercel-version: '47.2.2'
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
-  deploy-frontend:
-    name: Deploy Frontend
-    needs: [build-frontend]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.FRONTEND_PROJECT_ID }}
-          working-directory: Frontend
-          vercel-args: '--prod'
-          vercel-version: '47.2.2'
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.FRONTEND_PROJECT_ID }}
-
-  deploy-reviews:
-    name: Deploy Reviews Service
-    needs: [deploy-backend]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.REVIEWS_PROJECT_ID }}
-          working-directory: reviews-service
-          vercel-args: '--prod'
-          vercel-version: '47.2.2'
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.REVIEWS_PROJECT_ID }}
+          VERCEL_PROJECT_ID: ${{ matrix.project-id }}
